@@ -2,3 +2,4 @@ streamlit
 altair
 vega_datasets
 streamlit-vega-lite
+numpy
