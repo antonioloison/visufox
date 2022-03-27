@@ -36,7 +36,7 @@ def load_data():
     regions = defaultdict(list)
     for code, country in countries.items():
         regions[country["region"]].append(code)
-        regions["All world"].append(code)
+        regions["World"].append(code)
     return agriculture_data, countries, regions
 
 
@@ -44,7 +44,7 @@ agriculture_data, countries, regions = load_data()
 
 region_option = st.selectbox(
     "Select your region...",
-    ("All world",
+    ("World",
      "East Asia & Pacific",
      "Europe & Central Asia",
      "Latin America & Caribbean",
@@ -56,17 +56,14 @@ region_option = st.selectbox(
 st.write("You selected:", region_option)
 
 # Display region bar chart
-if region_option == "All world":
-    region_df = agriculture_data[agriculture_data["Country Name"] == "World"]
-else:
-    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
 
 region_df = region_df[region_df["Year"] != "2015-2020"]
 region_countries_df = agriculture_data[agriculture_data["Country Code"].isin(regions[region_option])]
 
-region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2020"].sort_values("average_value_Cereal production (metric tons)",
-                                                                    ascending=False)
-
+region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2020"].sort_values(
+    "average_value_Cereal production (metric tons)",
+    ascending=False)
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
@@ -113,15 +110,59 @@ with col2:
         "Select your region...",
         tuple(region_countries_df["Country Name"]))
 
+    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+    region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+
     country_df = agriculture_data[agriculture_data["Country Name"] == country_option]
-    country_df = country_df[country_df["Year"] != "2015-2020"]
+    country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+
+
+    def get_label(date, df):
+        """ Gets the label of the first and last point in the chart """
+        years = df[df[["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+                       "average_value_Cereal production (metric tons)",
+                       "Population"]].notnull().all(axis=1)]["Year"]
+        if date in [min(years), max(years)]:
+            return date
+        else:
+            return ""
+
+
+    region_df["label"] = region_df["Year"].apply(lambda x: get_label(x, region_df))
+    country_df["label"] = country_df["Year"].apply(lambda x: get_label(x, country_df))
+
     comparison_df = pd.concat([region_df, country_df])
 
+    comparison_df["polution_per_pop"] = \
+        comparison_df["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)"] / \
+        comparison_df["Population"]
+    comparison_df["cereal_prod_per_pop"] = comparison_df["average_value_Cereal production (metric tons)"] / \
+                                           comparison_df["Population"]
+    comparison_df = comparison_df[["polution_per_pop",
+                                   "cereal_prod_per_pop",
+                                   "Population",
+                                   "Year",
+                                   "Country Name",
+                                   "label"]]
+
     time_evolution = alt.Chart(comparison_df).mark_line(point=True).encode(
-        alt.X('average_value_Cereal production (metric tons)'),
-        alt.Y('average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)'),
+        alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
+        alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
         color="Country Name"
+    ).properties(
+        width=600,
+        height=400
     )
 
-    col2.altair_chart(time_evolution)
+    text = time_evolution.mark_text(
+        align='left',
+        baseline='middle',
+        dx=7,
+        dy=7,
+        fontSize=16
+    ).encode(
+        text='label'
+    )
+
+    col2.altair_chart(time_evolution + text)
