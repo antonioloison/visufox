@@ -37,13 +37,13 @@
   },
   "ATG": {
     "name": "Antigua and Barbuda",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "IBRD"
   },
   "ARG": {
     "name": "Argentina",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -55,7 +55,7 @@
   },
   "ABW": {
     "name": "Aruba",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -79,7 +79,7 @@
   },
   "BHS": {
     "name": "Bahamas, The",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -97,7 +97,7 @@
   },
   "BRB": {
     "name": "Barbados",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -115,7 +115,7 @@
   },
   "BLZ": {
     "name": "Belize",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IBRD"
   },
@@ -139,7 +139,7 @@
   },
   "BOL": {
     "name": "Bolivia",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IBRD"
   },
@@ -157,13 +157,13 @@
   },
   "BRA": {
     "name": "Brazil",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
   "VGB": {
     "name": "British Virgin Islands",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -217,7 +217,7 @@
   },
   "CYM": {
     "name": "Cayman Islands",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -241,7 +241,7 @@
   },
   "CHL": {
     "name": "Chile",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "IBRD"
   },
@@ -253,7 +253,7 @@
   },
   "COL": {
     "name": "Colombia",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -277,7 +277,7 @@
   },
   "CRI": {
     "name": "Costa Rica",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -295,13 +295,13 @@
   },
   "CUB": {
     "name": "Cuba",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "Not classified"
   },
   "CUW": {
     "name": "Curacao",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -331,19 +331,19 @@
   },
   "DMA": {
     "name": "Dominica",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "Blend"
   },
   "DOM": {
     "name": "Dominican Republic",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
   "ECU": {
     "name": "Ecuador",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -355,7 +355,7 @@
   },
   "SLV": {
     "name": "El Salvador",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IBRD"
   },
@@ -469,7 +469,7 @@
   },
   "GRD": {
     "name": "Grenada",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "Blend"
   },
@@ -481,7 +481,7 @@
   },
   "GTM": {
     "name": "Guatemala",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -499,19 +499,19 @@
   },
   "GUY": {
     "name": "Guyana",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IDA"
   },
   "HTI": {
     "name": "Haiti",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IDA"
   },
   "HND": {
     "name": "Honduras",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IDA"
   },
@@ -583,7 +583,7 @@
   },
   "JAM": {
     "name": "Jamaica",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -763,7 +763,7 @@
   },
   "MEX": {
     "name": "Mexico",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -853,7 +853,7 @@
   },
   "NIC": {
     "name": "Nicaragua",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Lower middle income",
     "lendingType": "IDA"
   },
@@ -907,7 +907,7 @@
   },
   "PAN": {
     "name": "Panama",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -919,13 +919,13 @@
   },
   "PRY": {
     "name": "Paraguay",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
   "PER": {
     "name": "Peru",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -949,7 +949,7 @@
   },
   "PRI": {
     "name": "Puerto Rico",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -1033,7 +1033,7 @@
   },
   "SXM": {
     "name": "Sint Maarten (Dutch part)",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -1081,25 +1081,25 @@
   },
   "KNA": {
     "name": "St. Kitts and Nevis",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "IBRD"
   },
   "LCA": {
     "name": "St. Lucia",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "Blend"
   },
   "MAF": {
     "name": "St. Martin (French part)",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
   "VCT": {
     "name": "St. Vincent and the Grenadines",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "Blend"
   },
@@ -1111,7 +1111,7 @@
   },
   "SUR": {
     "name": "Suriname",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Upper middle income",
     "lendingType": "IBRD"
   },
@@ -1171,7 +1171,7 @@
   },
   "TTO": {
     "name": "Trinidad and Tobago",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "IBRD"
   },
@@ -1195,7 +1195,7 @@
   },
   "TCA": {
     "name": "Turks and Caicos Islands",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
@@ -1237,7 +1237,7 @@
   },
   "URY": {
     "name": "Uruguay",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "IBRD"
   },
@@ -1255,7 +1255,7 @@
   },
   "VEN": {
     "name": "Venezuela, RB",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "Not classified",
     "lendingType": "IBRD"
   },
@@ -1267,7 +1267,7 @@
   },
   "VIR": {
     "name": "Virgin Islands (U.S.)",
-    "region": "Latin America & Caribbean ",
+    "region": "Latin America & Caribbean",
     "incomeLevel": "High income",
     "lendingType": "Not classified"
   },
