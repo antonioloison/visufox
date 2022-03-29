@@ -1,8 +1,10 @@
 # BIPO App
 # Authors: Setra Rakotovao, Antonio Loison, Lila Sainero, Géraud Faye
 
+from curses import use_default_colors
 import json
 from collections import defaultdict
+from turtle import color
 
 import streamlit as st
 import pandas as pd
@@ -11,6 +13,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import altair as alt
 from vega_datasets import data
+from streamlit_plotly_events import plotly_events
+from plotly.graph_objs import *
 
 TOP_NUMBER_OF_COUNTRIES = 20
 
@@ -53,7 +57,7 @@ region_option = st.selectbox(
      "South Asia",
      "Sub-Saharan Africa "))
 
-st.write("You selected:", region_option)
+# st.write("You selected:", region_option)
 
 # Display region bar chart
 region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
@@ -66,6 +70,8 @@ region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2
     ascending=False)
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+# selected_points = plotly_events(fig)
 fig.add_trace(
     go.Bar(
         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
@@ -83,7 +89,11 @@ fig.add_trace(
         marker=dict(color="brown")
     ), secondary_y=True)
 fig.update_layout(
-    title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}"
+    title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    title_font_color='rgba(255,255,255,255)',
+    font_color='rgba(255,255,255,255)'
 )
 
 # Set x-axis title
@@ -93,8 +103,14 @@ fig.update_xaxes(title_text="Country names")
 fig.update_yaxes(title_text="Average Cereal Production (metric tons)", secondary_y=False)
 fig.update_yaxes(title_text="Average Fertilizer Consumption \n(kilograms per hectare of arable land)", secondary_y=True)
 
+selected_points = plotly_events(fig, click_event=True, hover_event=False)
+try:
+    country_to_display = selected_points[-1]["x"]
+except:
+    country_to_display = "World"
+
 # fig.update_layout(xaxis=list(range = c(0,10)))
-st.plotly_chart(fig, use_container_width=True)
+# st.plotly_chart(fig, use_container_width=True)
 
 col1, col2 = st.columns(2)
 
@@ -106,14 +122,14 @@ with col1:
 with col2:
     st.header("Evolution over time")
 
-    country_option = st.selectbox(
-        "Select your region...",
-        tuple(region_countries_df["Country Name"]))
+    # country_option = st.selectbox(
+    #     "Select your region...",
+    #     tuple(region_countries_df["Country Name"]))
 
     region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
     region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
 
-    country_df = agriculture_data[agriculture_data["Country Name"] == country_option]
+    country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
     country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
 
 

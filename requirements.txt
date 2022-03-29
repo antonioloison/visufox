@@ -4,3 +4,5 @@ vega_datasets
 streamlit-vega-lite
 numpy
 plotly
+streamlit-plotly-events
+tk
