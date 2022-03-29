@@ -96,6 +96,16 @@ fig.update_yaxes(title_text="Average Fertilizer Consumption \n(kilograms per hec
 # fig.update_layout(xaxis=list(range = c(0,10)))
 st.plotly_chart(fig, use_container_width=True)
 
+country_option = st.selectbox(
+    "Select your country...",
+    tuple(region_countries_df["Country Name"]))
+
+region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+
+country_df = agriculture_data[agriculture_data["Country Name"] == country_option]
+country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -103,18 +113,75 @@ with col1:
 
     # TO DO
 
+    col_pollutions = [
+        {
+            "name": "Methane emissions",
+            "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+            "to_normalize": True,
+            "max": 3e-3
+        },
+        {
+            "name": "Nitrous oxide emissions",
+            "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
+            "to_normalize": True,
+            "max": 2e-3
+        },
+        {
+            "name": "Fertilizer consumption",
+            "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
+            "to_normalize": False,
+            "max": 5e2
+        },
+        {
+            "name": "Annual freshwater withdrawals",
+            "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
+            "to_normalize": False,
+            "max": 1e2
+        }
+    ]
+    categories, region_values, country_values = [], [], []
+
+    for col_info in col_pollutions:
+        categories.append(col_info["name"])
+        region_value = region_df[col_info["key"]]
+        if col_info["to_normalize"]:
+            region_value /= region_df["Population"]
+        region_value = region_value.mean() / col_info["max"]
+        region_values.append(region_value)
+        country_value = country_df[col_info["key"]]
+        if col_info["to_normalize"]:
+            country_value /= country_df["Population"]
+        country_value = country_value.mean() / col_info["max"]
+        country_values.append(country_value)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=region_values,
+        theta=categories,
+        fill='toself',
+        name=region_option
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=country_values,
+        theta=categories,
+        fill='toself',
+        name=country_option
+    ))
+
+    fig.update_layout(
+    polar=dict(
+        radialaxis=dict(
+        visible=True,
+        range=[0, 1]
+        )),
+    showlegend=True
+    )
+
+    st.plotly_chart(fig)
+
 with col2:
     st.header("Evolution over time")
-
-    country_option = st.selectbox(
-        "Select your region...",
-        tuple(region_countries_df["Country Name"]))
-
-    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
-    region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
-
-    country_df = agriculture_data[agriculture_data["Country Name"] == country_option]
-    country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
 
 
     def get_label(date, df):
