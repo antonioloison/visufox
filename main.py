@@ -78,33 +78,45 @@ region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2
     "average_value_Cereal production (metric tons)",
     ascending=False)
 
-fig = make_subplots(specs=[[{"secondary_y": True}]])
+fig = make_subplots(specs=[[{"secondary_y": False}]])
+
 
 # selected_points = plotly_events(fig)
 fig.add_trace(
     go.Bar(
         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
         y=region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES],
+        base=0,
         name="Average Cereal Production",
         marker=dict(color="green")
     ), secondary_y=False)
 
 fig.add_trace(
-    go.Scatter(
+    go.Bar(
         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-        y=region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+        y=-1000000*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
           :TOP_NUMBER_OF_COUNTRIES],
         name="Average Fertilizer Consumption",
         marker=dict(color="brown")
-    ), secondary_y=True)
+    ), secondary_y=False)
+
+# fig.add_trace(
+#     go.Scatter(
+#         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+#         y=region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+#           :TOP_NUMBER_OF_COUNTRIES],
+#         name="Average Fertilizer Consumption",
+#         marker=dict(color="brown")
+#     ), secondary_y=True)
+
 fig.update_layout(
     title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
     title_font_color="#391d04",
-    font_color="#391d04"
+    font_color="#391d04", 
+    barmode='relative'
 )
-
 # Set x-axis title
 fig.update_xaxes(title_text="Country names")
 
