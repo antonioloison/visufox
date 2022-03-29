@@ -1,7 +1,7 @@
 # BIPO App
 # Authors: Setra Rakotovao, Antonio Loison, Lila Sainero, Géraud Faye
 
-from curses import use_default_colors
+# from curses import use_default_colors
 import json
 from collections import defaultdict
 from turtle import color
@@ -18,9 +18,18 @@ from plotly.graph_objs import *
 
 TOP_NUMBER_OF_COUNTRIES = 20
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+     page_title="BAPO: Biggest Agricultural Polluters",
+     page_icon="🚜",
+     layout="wide",
+     initial_sidebar_state="expanded",
+     menu_items={
+         'About': " This application shows the characteristics of the biggest agricultural polluters in the different regions of the world. \n You can check how individual countries compare to other countries of the region or to average figures of their region. \n The purpose of this app is to clearly visualize the difference between countries in terms of agricultural pollution and have an idea of the reasons of their pollution \n *Enjoy!*"
+     }
+ )
 
-st.write("# BIPO: Biggest Agricultural Polluters")
+
+st.write("# BAPO: Biggest Agricultural Polluters")
 
 st.write("""
 **Task:** Visualization of agricultural-linked pollution in the world
@@ -92,8 +101,8 @@ fig.update_layout(
     title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    title_font_color='rgba(255,255,255,255)',
-    font_color='rgba(255,255,255,255)'
+    title_font_color="#391d04",
+    font_color="#391d04"
 )
 
 # Set x-axis title
