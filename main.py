@@ -249,7 +249,7 @@ with col1:
             legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.8)
     )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     st.header("Evolution over time")
@@ -287,7 +287,8 @@ with col2:
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
         alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
-        color="Country Name"
+        color="Country Name",
+        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "polution_per_pop"]
     ).properties(
         width=600,
         height=400
@@ -303,4 +304,4 @@ with col2:
         text='label'
     )
 
-    col2.altair_chart(time_evolution + text)
+    col2.altair_chart((time_evolution + text).interactive(), use_container_width=True)
