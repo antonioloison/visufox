@@ -228,7 +228,7 @@ with col1:
     showlegend=True
     )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     st.header("Evolution over time")
@@ -283,4 +283,4 @@ with col2:
         text='label'
     )
 
-    col2.altair_chart(time_evolution + text)
+    col2.altair_chart((time_evolution + text).interactive(), use_container_width=True)
