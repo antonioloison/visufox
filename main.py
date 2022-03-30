@@ -5,6 +5,7 @@
 # from ast import pattern
 import json
 from collections import defaultdict
+from tkinter import TOP
 from turtle import color, fillcolor
 
 import streamlit as st
@@ -76,9 +77,15 @@ with bigcol1:
 with bigcol2:
 # Display region bar chart
 
+    if region_option == "North America":
+        TOP_NUMBER_OF_COUNTRIES = 3
+    elif region_option == "South Asia":
+        TOP_NUMBER_OF_COUNTRIES = 8
+
     st.header(f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}")
 
     region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+
 
     region_df = region_df[region_df["Year"] != "2015-2020"]
     region_countries_df = agriculture_data[agriculture_data["Country Code"].isin(regions[region_option])]
@@ -87,9 +94,15 @@ with bigcol2:
         "average_value_Cereal production (metric tons)",
         ascending=False)
 
+    print(region_countries_df.keys())
+
+    region_countries_df['Total fertilizer consumption'] = region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
+        region_countries_df["average_value_Arable land (hectares)"] / 1e3
+
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-    scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/100
+    # scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/1e6
+    scale = 10
     exposant = np.int(np.log10(np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])))
 
     cereal_max = np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])//10**exposant
@@ -104,19 +117,19 @@ with bigcol2:
             base=0,
             name="Average Cereal Production (tons)",
             marker=dict(color="green"), 
-            hovertemplate="%{x} <br>"+"Cereal Production: %{y} tons",
+            hovertemplate="%{x} <br>"+"Cereal Production: %{y:.0e} tons",
         ), secondary_y=False)
 
-    y_scaled = list(region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][:TOP_NUMBER_OF_COUNTRIES].values)
+    y_scaled = list(region_countries_df["Total fertilizer consumption"][:TOP_NUMBER_OF_COUNTRIES].values)
 
     fig.add_trace(
         go.Bar(
             x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-            y=-scale*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+            y=-scale*region_countries_df['Total fertilizer consumption'][
             :TOP_NUMBER_OF_COUNTRIES],
-            name="Average Fertilizer Consumption (kg per hectare of arable land)",
+            name="Average Fertilizer Consumption (tons)",
             marker=dict(color="maroon"), 
-            hovertemplate=["%{x} <br>"+"Fertilizer consumption: {} kg".format(np.round(y_scaled[i], decimals=2)) for i in range(TOP_NUMBER_OF_COUNTRIES)],
+            hovertemplate=["%{x} <br>"+"Fertilizer consumption: {:.0e} tons".format(y_scaled[i]) for i in range(TOP_NUMBER_OF_COUNTRIES)],
         ), secondary_y=False)
 
     fig.update_layout(
@@ -136,8 +149,10 @@ with bigcol2:
         yaxis = dict(
             tickmode = 'array',
             tickvals = [cereal_max//2*i*10**exposant for i in range(-2, 3)],
-            ticktext = [f'{-np.round(2*i*10**exposant/scale, decimals=-2)}' for i in range(-2, 1)] + [f'{abs(2*i*10**exposant):.0e}' for i in range(1, 4)], 
+            ticktext = [f'{-2*i*10**exposant/scale:.0e}' for i in range(-2, 1)] + [f'{abs(2*i*10**exposant):.0e}' for i in range(1, 4)], 
+
     )
+    
 
     )
 
