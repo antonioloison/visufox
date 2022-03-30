@@ -5,7 +5,7 @@
 from ast import pattern
 import json
 from collections import defaultdict
-from turtle import color
+from turtle import color, fillcolor
 
 import streamlit as st
 import pandas as pd
@@ -219,14 +219,17 @@ with col1:
         r=region_values,
         theta=categories,
         fill='tonext',
-        name=region_option
+        name=region_option, 
+        fillcolor='#ffcba4', 
+        line_color='#E2774E'
     ))
     if country_to_display != "World":
         fig.add_trace(go.Scatterpolar(
             r=country_values,
             theta=categories,
             # fill='toself',
-            name=country_to_display
+            name=country_to_display, 
+            line_color='#319177'
         ))
 
     fig.update_layout(
@@ -259,9 +262,9 @@ with col2:
         else:
             return ""
 
-
     region_df["label"] = region_df["Year"].apply(lambda x: get_label(x, region_df))
     country_df["label"] = country_df["Year"].apply(lambda x: get_label(x, country_df))
+
 
     comparison_df = pd.concat([region_df, country_df])
 
@@ -281,8 +284,7 @@ with col2:
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
         alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
-        color="Country Name",
-        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "polution_per_pop"]
+        color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'))
     ).properties(
         width=600,
         height=400
