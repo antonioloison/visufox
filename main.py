@@ -133,25 +133,99 @@ except:
 # fig.update_layout(xaxis=list(range = c(0,10)))
 # st.plotly_chart(fig, use_container_width=True)
 
+
+region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+
+country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
+country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+
 col1, col2 = st.columns(2)
 
 with col1:
     st.header("Emissions Details")
 
-    # TO DO
+    col_pollutions = [
+        {
+            "name": "Methane emissions",
+            "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+            "to_normalize": True
+        },
+        {
+            "name": "Nitrous oxide emissions",
+            "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
+            "to_normalize": True
+        },
+        {
+            "name": "Fertilizer consumption",
+            "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
+            "to_normalize": False
+        },
+        {
+            "name": "Annual freshwater withdrawals",
+            "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
+            "to_normalize": False
+        }
+    ]
+    categories, region_values, country_values, region_real_values, country_real_values = [], [], [], [], []
+
+    logscale = st.checkbox('logscale')
+    for col_info in col_pollutions:
+        colname = col_info["key"]
+        all_data = agriculture_data[["Country Name", "Population", colname]].copy()
+        if col_info["to_normalize"]:
+            all_data[colname] /= all_data["Population"]
+        all_data = all_data.groupby("Country Name")[colname].mean()
+        all_data = all_data[all_data != 0]
+        max_value, min_value = all_data.max(), all_data.min()
+        if logscale:
+            max_value, min_value = np.log(max_value), np.log(min_value)
+        categories.append(col_info["name"])
+        region_value = region_df[colname].copy()
+        if col_info["to_normalize"]:
+            region_value /= region_df["Population"]
+        region_mean_value = np.log(region_value.mean()) if logscale else region_value.mean()
+        region_real_values.append(region_mean_value)
+        region_value = max((region_mean_value - min_value) / (max_value - min_value), 0)
+        region_values.append(region_value)
+        country_value = country_df[colname].copy()
+        if col_info["to_normalize"]:
+            country_value /= country_df["Population"]
+        country_mean_value = np.log(country_value.mean()) if logscale else country_value.mean()
+        country_real_values.append(country_mean_value)
+        country_value = max((country_mean_value - min_value) / (max_value - min_value), 0)
+        country_values.append(country_value)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=region_values,
+        theta=categories,
+        fill='toself',
+        name=region_option
+    ))
+    if country_to_display != "World":
+        fig.add_trace(go.Scatterpolar(
+            r=country_values,
+            theta=categories,
+            fill='toself',
+            name=country_to_display
+        ))
+
+    fig.update_layout(
+    title='0 = min, 1 = max',
+    polar=dict(
+        radialaxis=dict(
+        visible=True,
+        range=[0, 1]
+        )),
+    showlegend=True
+    )
+
+    st.plotly_chart(fig)
 
 with col2:
     st.header("Evolution over time")
-
-    # country_option = st.selectbox(
-    #     "Select your region...",
-    #     tuple(region_countries_df["Country Name"]))
-
-    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
-    region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
-
-    country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
-    country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
 
 
     def get_label(date, df):
