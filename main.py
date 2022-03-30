@@ -240,12 +240,6 @@ with col1:
             range=[0, 1]
             )),
         showlegend=True,
-            margin=go.layout.Margin(
-            l=40, #left margin
-            r=200, #right margin
-            b=80, #bottom margin
-            t=80  #top margin
-            ), 
             legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.8)
     )
 
