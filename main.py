@@ -28,121 +28,125 @@ st.set_page_config(
      }
  )
 
+bigcol1, bigcol2 = st.columns((3,4))
 
-st.write("# BAPO: Biggest Agricultural Polluters")
+with bigcol1:
 
-st.write("""
-**Task:** Visualization of agricultural-linked pollution in the world
+    st.write("# BAPO: Biggest Agricultural Polluters")
 
-**Description:**
-This tool shows the pollution caused by countries due to agriculture, with respect to their production. 
-""")
+    st.write("""
+    **Task:** Visualization of agricultural-linked pollution in the world
 
-
-# Load Gapminder data
-# @st.cache decorator skip reloading the code when the apps rerun.
-@st.cache
-def load_data():
-    agriculture_data = pd.read_csv("data/agriculture_data.csv", delimiter=";")
-    with open("assets/countries.json") as f:
-        countries = json.load(f)
-    regions = defaultdict(list)
-    for code, country in countries.items():
-        regions[country["region"]].append(code)
-        regions["World"].append(code)
-    return agriculture_data, countries, regions
+    **Description:**
+    This tool shows the pollution caused by countries due to agriculture, with respect to their production. 
+    """)
 
 
-agriculture_data, countries, regions = load_data()
+    # Load Gapminder data
+    # @st.cache decorator skip reloading the code when the apps rerun.
+    @st.cache
+    def load_data():
+        agriculture_data = pd.read_csv("data/agriculture_data.csv", delimiter=";")
+        with open("assets/countries.json") as f:
+            countries = json.load(f)
+        regions = defaultdict(list)
+        for code, country in countries.items():
+            regions[country["region"]].append(code)
+            regions["World"].append(code)
+        return agriculture_data, countries, regions
 
-region_option = st.selectbox(
-    "Select your region...",
-    ("World",
-     "East Asia & Pacific",
-     "Europe & Central Asia",
-     "Latin America & Caribbean",
-     "Middle East & North Africa",
-     "North America",
-     "South Asia",
-     "Sub-Saharan Africa "))
+
+    agriculture_data, countries, regions = load_data()
+
+    region_option = st.selectbox(
+        "Select your region...",
+        ("World",
+        "East Asia & Pacific",
+        "Europe & Central Asia",
+        "Latin America & Caribbean",
+        "Middle East & North Africa",
+        "North America",
+        "South Asia",
+        "Sub-Saharan Africa "))
+
+
 
 # st.write("You selected:", region_option)
-
+with bigcol2:
 # Display region bar chart
-region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
 
-region_df = region_df[region_df["Year"] != "2015-2020"]
-region_countries_df = agriculture_data[agriculture_data["Country Code"].isin(regions[region_option])]
+    region_df = region_df[region_df["Year"] != "2015-2020"]
+    region_countries_df = agriculture_data[agriculture_data["Country Code"].isin(regions[region_option])]
 
-region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2020"].sort_values(
-    "average_value_Cereal production (metric tons)",
-    ascending=False)
+    region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2020"].sort_values(
+        "average_value_Cereal production (metric tons)",
+        ascending=False)
 
-fig = make_subplots(specs=[[{"secondary_y": False}]])
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
 
 
-# selected_points = plotly_events(fig)
-fig.add_trace(
-    go.Bar(
-        x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-        y=region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES],
-        base=0,
-        name="Average Cereal Production",
-        marker=dict(color="green")
-    ), secondary_y=False)
+    # selected_points = plotly_events(fig)
+    fig.add_trace(
+        go.Bar(
+            x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+            y=region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES],
+            base=0,
+            name="Average Cereal Production",
+            marker=dict(color="green")
+        ), secondary_y=False)
 
-fig.add_trace(
-    go.Bar(
-        x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-        y=-1000000*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
-          :TOP_NUMBER_OF_COUNTRIES],
-        name="Average Fertilizer Consumption",
-        marker=dict(color="brown")
-    ), secondary_y=False)
+    fig.add_trace(
+        go.Bar(
+            x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+            y=-1000000*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+            :TOP_NUMBER_OF_COUNTRIES],
+            name="Average Fertilizer Consumption",
+            marker=dict(color="brown")
+        ), secondary_y=False)
 
-# fig.add_trace(
-#     go.Scatter(
-#         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-#         y=region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
-#           :TOP_NUMBER_OF_COUNTRIES],
-#         name="Average Fertilizer Consumption",
-#         marker=dict(color="brown")
-#     ), secondary_y=True)
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+    #         y=region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+    #           :TOP_NUMBER_OF_COUNTRIES],
+    #         name="Average Fertilizer Consumption",
+    #         marker=dict(color="brown")
+    #     ), secondary_y=True)
 
-fig.update_layout(
-    title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)',
-    title_font_color="#391d04",
-    font_color="#391d04", 
-    barmode='relative'
-)
-# Set x-axis title
-fig.update_xaxes(title_text="Country names")
+    fig.update_layout(
+        title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        title_font_color="#391d04",
+        font_color="#391d04", 
+        barmode='relative'
+    )
+    # Set x-axis title
+    # fig.update_xaxes(title_text="Country names")
 
-# Set y-axes titles
-fig.update_yaxes(title_text="Average Cereal Production (metric tons)", secondary_y=False)
-fig.update_yaxes(title_text="Average Fertilizer Consumption \n(kilograms per hectare of arable land)", secondary_y=True)
+    # Set y-axes titles
+    # fig.update_yaxes(title_text="Avg Cereal Production (metric tons)", secondary_y=False)
+    # fig.update_yaxes(title_text="Avg Fertilizer Consumption \n(kilograms per hectare of arable land)", secondary_y=True)
 
-selected_points = plotly_events(fig, click_event=True, hover_event=False)
-try:
-    country_to_display = selected_points[-1]["x"]
-except:
-    country_to_display = "World"
+    selected_points = plotly_events(fig, click_event=True, hover_event=False)
+    try:
+        country_to_display = selected_points[-1]["x"]
+    except:
+        country_to_display = "World"
 
+col1, col2 = st.columns((2,2))
 # fig.update_layout(xaxis=list(range = c(0,10)))
 # st.plotly_chart(fig, use_container_width=True)
 
-
-region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
-region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
-
-country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
-country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
-
-col1, col2 = st.columns(2)
-
 with col1:
+
+    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+    region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+
+    country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
+    country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+
     st.header("Emissions Details")
 
     col_pollutions = [
@@ -169,7 +173,7 @@ with col1:
     ]
     categories, region_values, country_values, region_real_values, country_real_values = [], [], [], [], []
 
-    logscale = st.checkbox('logscale')
+    logscale = True
     for col_info in col_pollutions:
         colname = col_info["key"]
         all_data = agriculture_data[["Country Name", "Population", colname]].copy()
@@ -195,25 +199,27 @@ with col1:
         country_real_values.append(country_mean_value)
         country_value = max((country_mean_value - min_value) / (max_value - min_value), 0)
         country_values.append(country_value)
-
+    region_values.append(region_values[0])
+    country_values.append(country_values[0])
+    categories.append(categories[0])
     fig = go.Figure()
 
     fig.add_trace(go.Scatterpolar(
         r=region_values,
         theta=categories,
-        fill='toself',
+        fill='tonext',
         name=region_option
     ))
     if country_to_display != "World":
         fig.add_trace(go.Scatterpolar(
             r=country_values,
             theta=categories,
-            fill='toself',
+            # fill='toself',
             name=country_to_display
         ))
 
     fig.update_layout(
-    title='0 = min, 1 = max',
+    # title='0 = min, 1 = max',
     polar=dict(
         radialaxis=dict(
         visible=True,
@@ -231,8 +237,8 @@ with col2:
     def get_label(date, df):
         """ Gets the label of the first and last point in the chart """
         years = df[df[["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
-                       "average_value_Cereal production (metric tons)",
-                       "Population"]].notnull().all(axis=1)]["Year"]
+                    "average_value_Cereal production (metric tons)",
+                    "Population"]].notnull().all(axis=1)]["Year"]
         if date in [min(years), max(years)]:
             return date
         else:
@@ -248,13 +254,13 @@ with col2:
         comparison_df["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)"] / \
         comparison_df["Population"]
     comparison_df["cereal_prod_per_pop"] = comparison_df["average_value_Cereal production (metric tons)"] / \
-                                           comparison_df["Population"]
+                                        comparison_df["Population"]
     comparison_df = comparison_df[["polution_per_pop",
-                                   "cereal_prod_per_pop",
-                                   "Population",
-                                   "Year",
-                                   "Country Name",
-                                   "label"]]
+                                "cereal_prod_per_pop",
+                                "Population",
+                                "Year",
+                                "Country Name",
+                                "label"]]
 
     time_evolution = alt.Chart(comparison_df).mark_line(point=True).encode(
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
