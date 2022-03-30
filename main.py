@@ -2,6 +2,7 @@
 # Authors: Setra Rakotovao, Antonio Loison, Lila Sainero, Géraud Faye
 
 # from curses import use_default_colors
+from ast import pattern
 import json
 from collections import defaultdict
 from turtle import color
@@ -28,7 +29,7 @@ st.set_page_config(
      }
  )
 
-bigcol1, bigcol2 = st.columns((3,4))
+bigcol1, bigcol2 = st.columns((1,2))
 
 with bigcol1:
 
@@ -74,6 +75,9 @@ with bigcol1:
 # st.write("You selected:", region_option)
 with bigcol2:
 # Display region bar chart
+
+    st.header(f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}")
+
     region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
 
     region_df = region_df[region_df["Year"] != "2015-2020"]
@@ -93,7 +97,7 @@ with bigcol2:
             y=region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES],
             base=0,
             name="Average Cereal Production",
-            marker=dict(color="green")
+            marker=dict(color="green"), 
         ), secondary_y=False)
 
     fig.add_trace(
@@ -102,7 +106,7 @@ with bigcol2:
             y=-1000000*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
             :TOP_NUMBER_OF_COUNTRIES],
             name="Average Fertilizer Consumption",
-            marker=dict(color="brown")
+            marker=dict(color="maroon")
         ), secondary_y=False)
 
     # fig.add_trace(
@@ -115,12 +119,19 @@ with bigcol2:
     #     ), secondary_y=True)
 
     fig.update_layout(
-        title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
+        # title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         title_font_color="#391d04",
         font_color="#391d04", 
-        barmode='relative'
+        barmode='relative',
+        margin=go.layout.Margin(
+        l=10, #left margin
+        r=0, #right margin
+        b=10, #bottom margin
+        t=0  #top margin
+        ), 
+        legend=dict(yanchor="top", y=1.1, xanchor="left", x=0.6)
     )
     # Set x-axis title
     # fig.update_xaxes(title_text="Country names")
@@ -220,12 +231,22 @@ with col1:
 
     fig.update_layout(
     # title='0 = min, 1 = max',
-    polar=dict(
-        radialaxis=dict(
-        visible=True,
-        range=[0, 1]
-        )),
-    showlegend=True
+        # template='plotly', 
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        polar=dict(
+            radialaxis=dict(
+            visible=True,
+            range=[0, 1]
+            )),
+        showlegend=True,
+            margin=go.layout.Margin(
+            l=40, #left margin
+            r=200, #right margin
+            b=80, #bottom margin
+            t=80  #top margin
+            ), 
+            legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.8)
     )
 
     st.plotly_chart(fig)
