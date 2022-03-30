@@ -266,7 +266,8 @@ with col2:
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
         alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
-        color="Country Name"
+        color="Country Name",
+        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "polution_per_pop"]
     ).properties(
         width=600,
         height=400
