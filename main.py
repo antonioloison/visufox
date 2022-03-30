@@ -55,6 +55,8 @@ with bigcol1:
         for code, country in countries.items():
             regions[country["region"]].append(code)
             regions["World"].append(code)
+        agriculture_data['Total fertilizer consumption'] = agriculture_data["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
+                    agriculture_data["average_value_Arable land (hectares)"] / 1e3
         return agriculture_data, countries, regions
 
 
@@ -93,8 +95,6 @@ with bigcol2:
     region_countries_df = region_countries_df[region_countries_df["Year"] == "2015-2020"].sort_values(
         "average_value_Cereal production (metric tons)",
         ascending=False)
-
-    print(region_countries_df.keys())
 
     region_countries_df['Total fertilizer consumption'] = region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
         region_countries_df["average_value_Arable land (hectares)"] / 1e3
@@ -177,9 +177,13 @@ with col1:
 
     region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
     region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+    region_df['Total fertilizer consumption'] = region_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
+        region_df["average_value_Arable land (hectares)"] / 1e3
 
     country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
     country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+    country_df['Total fertilizer consumption'] = country_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
+        country_df["average_value_Arable land (hectares)"] / 1e3
 
     st.header("Emissions Details")
 
@@ -187,54 +191,75 @@ with col1:
         {
             "name": "Methane emissions",
             "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+            "metric": "thousand metric tons of CO2 equivalent",
             "to_normalize": True
         },
         {
             "name": "Nitrous oxide emissions",
             "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
+            "metric": "thousand metric tons of CO2 equivalent",
             "to_normalize": True
         },
         {
             "name": "Fertilizer consumption",
             "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
+            "metric": "kilograms per hectare of arable land",
             "to_normalize": False
         },
         {
             "name": "Annual freshwater withdrawals",
             "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
+            "metric": "% of total freshwater withdrawal",
             "to_normalize": False
         }
     ]
-    categories, region_values, country_values, region_real_values, country_real_values = [], [], [], [], []
+    categories, region_values, country_values, region_real_values, country_real_values, metrics, normalized = [], [], [], [], [], [], []
 
     logscale = True
     for col_info in col_pollutions:
         colname = col_info["key"]
+
         all_data = agriculture_data[["Country Name", "Population", colname]].copy()
+        
         if col_info["to_normalize"]:
             all_data[colname] /= all_data["Population"]
         all_data = all_data.groupby("Country Name")[colname].mean()
         all_data = all_data[all_data != 0]
         max_value, min_value = all_data.max(), all_data.min()
+
         if logscale:
             max_value, min_value = np.log(max_value), np.log(min_value)
+        
         categories.append(col_info["name"])
         region_value = region_df[colname].copy()
+        
         if col_info["to_normalize"]:
             region_value /= region_df["Population"]
-        region_mean_value = np.log(region_value.mean()) if logscale else region_value.mean()
-        region_real_values.append(region_mean_value)
+        
+        region_mean_value = np.nanmean(np.log(region_value)) if logscale else region_value.mean()
+        region_real_values.append(np.exp(region_mean_value))
         region_value = max((region_mean_value - min_value) / (max_value - min_value), 0)
         region_values.append(region_value)
         country_value = country_df[colname].copy()
+        
         if col_info["to_normalize"]:
             country_value /= country_df["Population"]
+        
         country_mean_value = np.log(country_value.mean()) if logscale else country_value.mean()
-        country_real_values.append(country_mean_value)
+        country_real_values.append(np.exp(country_mean_value))
         country_value = max((country_mean_value - min_value) / (max_value - min_value), 0)
         country_values.append(country_value)
+
+        metrics.append(col_info["metric"])
+        normalized.append(col_info["to_normalize"])
+    
     region_values.append(region_values[0])
     country_values.append(country_values[0])
+    region_real_values.append(region_real_values[0])
+    country_real_values.append(country_real_values[0])
+    metrics.append(metrics[0])
+    normalized.append(normalized[0])
+    
     categories.append(categories[0])
     fig = go.Figure()
 
@@ -244,7 +269,8 @@ with col1:
         fill='tonext',
         name=region_option, 
         # fillcolor='#ffcba4', 
-        line_color='#319177'
+        line_color='#319177', 
+        hovertemplate=["{} {}: <br> {} <br> ({})".format(categories[i], "per person" if normalized[i] else "", region_real_values[i], metrics[i])for i in range(len(region_real_values))]
     ))
     if country_to_display != "World":
         fig.add_trace(go.Scatterpolar(
@@ -252,7 +278,8 @@ with col1:
             theta=categories,
             # fill='toself',
             name=country_to_display, 
-            line_color='#E2774E'
+            line_color='#E2774E', 
+            hovertemplate=["{} {}: <br> {} <br> ({})".format(categories[i], "per person" if normalized[i] else "",country_real_values[i], metrics[i])for i in range(len(country_real_values))]
             
         ))
 
