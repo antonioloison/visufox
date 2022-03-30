@@ -89,34 +89,31 @@ with bigcol2:
 
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-
+    scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/100
+    exposant = np.int(np.log10(np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])))
+    print(exposant)
+    cereal_max = np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])//10**exposant
+    if cereal_max < 2:
+        exposant = exposant - 1
+        cereal_max = 8
     # selected_points = plotly_events(fig)
     fig.add_trace(
         go.Bar(
             x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
             y=region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES],
             base=0,
-            name="Average Cereal Production",
+            name="Average Cereal Production (tons)",
             marker=dict(color="green"), 
         ), secondary_y=False)
 
     fig.add_trace(
         go.Bar(
             x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-            y=-1000000*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
+            y=-scale*region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
             :TOP_NUMBER_OF_COUNTRIES],
-            name="Average Fertilizer Consumption",
-            marker=dict(color="maroon")
+            name="Average Fertilizer Consumption (kg per hectare of arable land)",
+            marker=dict(color="maroon"), 
         ), secondary_y=False)
-
-    # fig.add_trace(
-    #     go.Scatter(
-    #         x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-    #         y=region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][
-    #           :TOP_NUMBER_OF_COUNTRIES],
-    #         name="Average Fertilizer Consumption",
-    #         marker=dict(color="brown")
-    #     ), secondary_y=True)
 
     fig.update_layout(
         # title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
@@ -126,13 +123,20 @@ with bigcol2:
         font_color="#391d04", 
         barmode='relative',
         margin=go.layout.Margin(
-        l=10, #left margin
-        r=0, #right margin
-        b=10, #bottom margin
+        l=20, #left margin
+        r=20, #right margin
+        b=40, #bottom margin
         t=0  #top margin
         ), 
-        legend=dict(yanchor="top", y=1.1, xanchor="left", x=0.6)
+        legend=dict(yanchor="top", y=1.1, xanchor="left", x=0.4), 
+        yaxis = dict(
+            tickmode = 'array',
+            tickvals = [cereal_max//2*i*10**exposant for i in range(-2, 3)],
+            ticktext = [f'{-np.round(2*i*10**exposant/scale, decimals=-2)}' for i in range(-2, 1)] + [f'{abs(2*i*10**exposant):.0e}' for i in range(1, 4)], 
     )
+
+    )
+
     # Set x-axis title
     # fig.update_xaxes(title_text="Country names")
 
