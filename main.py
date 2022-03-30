@@ -2,7 +2,7 @@
 # Authors: Setra Rakotovao, Antonio Loison, Lila Sainero, Géraud Faye
 
 # from curses import use_default_colors
-from ast import pattern
+# from ast import pattern
 import json
 from collections import defaultdict
 from turtle import color, fillcolor
@@ -284,7 +284,14 @@ with col2:
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
         alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
-        color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'))
+        color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'), sort=["World",
+        "East Asia & Pacific",
+        "Europe & Central Asia",
+        "Latin America & Caribbean",
+        "Middle East & North Africa",
+        "North America",
+        "South Asia",
+        "Sub-Saharan Africa "])
     ).properties(
         width=600,
         height=400
