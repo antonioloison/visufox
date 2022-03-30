@@ -91,7 +91,7 @@ with bigcol2:
 
     scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/100
     exposant = np.int(np.log10(np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])))
-    print(exposant)
+
     cereal_max = np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])//10**exposant
     if cereal_max < 2:
         exposant = exposant - 1
@@ -104,7 +104,10 @@ with bigcol2:
             base=0,
             name="Average Cereal Production (tons)",
             marker=dict(color="green"), 
+            hovertemplate="%{x} <br>"+"Cereal Production: %{y} tons",
         ), secondary_y=False)
+
+    y_scaled = list(region_countries_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"][:TOP_NUMBER_OF_COUNTRIES].values)
 
     fig.add_trace(
         go.Bar(
@@ -113,6 +116,7 @@ with bigcol2:
             :TOP_NUMBER_OF_COUNTRIES],
             name="Average Fertilizer Consumption (kg per hectare of arable land)",
             marker=dict(color="maroon"), 
+            hovertemplate=["%{x} <br>"+"Fertilizer consumption: {} kg".format(np.round(y_scaled[i], decimals=2)) for i in range(TOP_NUMBER_OF_COUNTRIES)],
         ), secondary_y=False)
 
     fig.update_layout(
@@ -296,7 +300,8 @@ with col2:
         "Middle East & North Africa",
         "North America",
         "South Asia",
-        "Sub-Saharan Africa ", "World"])
+        "Sub-Saharan Africa ", "World"]), 
+        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "polution_per_pop"]
     ).properties(
         width=600,
         height=400
