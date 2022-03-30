@@ -220,8 +220,8 @@ with col1:
         theta=categories,
         fill='tonext',
         name=region_option, 
-        fillcolor='#ffcba4', 
-        line_color='#E2774E'
+        # fillcolor='#ffcba4', 
+        line_color='#319177'
     ))
     if country_to_display != "World":
         fig.add_trace(go.Scatterpolar(
@@ -229,7 +229,8 @@ with col1:
             theta=categories,
             # fill='toself',
             name=country_to_display, 
-            line_color='#319177'
+            line_color='#E2774E'
+            
         ))
 
     fig.update_layout(
@@ -284,14 +285,14 @@ with col2:
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
         alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
         order='Year',
-        color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'), sort=["World",
+        color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'), sort=[
         "East Asia & Pacific",
         "Europe & Central Asia",
         "Latin America & Caribbean",
         "Middle East & North Africa",
         "North America",
         "South Asia",
-        "Sub-Saharan Africa "])
+        "Sub-Saharan Africa ", "World"])
     ).properties(
         width=600,
         height=400
