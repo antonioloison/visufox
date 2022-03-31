@@ -89,8 +89,13 @@ with bigcol1:
     st.write("""
     **Task:** Visualization of agricultural-linked pollution in the world
 
-    **Description:**
-    This tool shows the pollution caused by countries due to agriculture, with respect to their production. 
+    **Description:** This application shows the characteristics of the biggest agricultural polluters in the different regions of 
+    the world. You can check how individual countries compare to other countries of the region or to average 
+    figures of their region. The purpose of this app is to clearly visualize the difference between countries in 
+    terms of agricultural pollution and have an idea of the reasons of their pollution. Enjoy!
+    
+    The data comes from World Bank Data and can be downloaded at this [link](https://github.com/ZeningQu/World-Bank-Data-by-Indicators/blob/master/agriculture-and-rural-development/agriculture-and-rural-development.csv).
+    
     """)
 
 
