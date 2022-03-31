@@ -127,7 +127,7 @@ with bigcol1:
         "South Asia",
         "Sub-Saharan Africa "))
 
-
+    year_min, year_max = st.slider('Year', min_value=1960, max_value=2020, value=(2010, 2020))
 
 # st.write("You selected:", region_option)
 with bigcol2:
@@ -258,7 +258,6 @@ with bigcol2:
     else:
         st.write(f"The currently selected country is **{country_to_display}**.")
 
-year_min, year_max = st.slider('Year', min_value=1960, max_value=2020, value=(2010, 2020))
 
 col1, col2 = st.columns((2,2))
 # fig.update_layout(xaxis=list(range = c(0,10)))
