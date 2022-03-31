@@ -142,7 +142,7 @@ with bigcol2:
         margin=go.layout.Margin(
         l=20, #left margin
         r=20, #right margin
-        b=40, #bottom margin
+        b=80, #bottom margin
         t=0  #top margin
         ), 
         legend=dict(yanchor="top", y=1.1, xanchor="left", x=0.4), 
@@ -169,8 +169,11 @@ with bigcol2:
     except:
         country_to_display = region_option
 
-    st.write("You can select a country on the bar chart above by clicking on the corresponding bar above.")
-    st.write(f"The currently selected country is **{country_to_display}**")
+    st.write("You can select a country on the bar chart above by clicking on the corresponding bar.")
+    if country_to_display == "World":
+        st.write("There is currently no selected country.")
+    else:
+        st.write(f"The currently selected country is **{country_to_display}**.")
 
 col1, col2 = st.columns((2,2))
 # fig.update_layout(xaxis=list(range = c(0,10)))
