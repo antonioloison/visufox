@@ -167,7 +167,10 @@ with bigcol2:
     try:
         country_to_display = selected_points[-1]["x"]
     except:
-        country_to_display = "World"
+        country_to_display = region_option
+
+    st.write("You can select a country on the bar chart above by clicking on the corresponding bar above.")
+    st.write(f"The currently selected country is **{country_to_display}**")
 
 col1, col2 = st.columns((2,2))
 # fig.update_layout(xaxis=list(range = c(0,10)))
