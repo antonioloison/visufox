@@ -221,7 +221,7 @@ with bigcol2:
         margin=go.layout.Margin(
         l=20, #left margin
         r=20, #right margin
-        b=40, #bottom margin
+        b=80, #bottom margin
         t=0  #top margin
         ), 
         legend=dict(yanchor="top", y=1.1, xanchor="left", x=-0.1), 
@@ -246,8 +246,13 @@ with bigcol2:
     except:
         country_to_display = region_option
 
-    st.write("You can select a country on the bar chart above by clicking on the corresponding bar above.")
-    st.write(f"The currently selected country is **{country_to_display}**")
+    st.write("You can select a country on the bar chart above by clicking on the corresponding bar.")
+    if country_to_display == "World":
+        st.write("There is currently no selected country.")
+    else:
+        st.write(f"The currently selected country is **{country_to_display}**.")
+
+year_min, year_max = st.slider('Year', min_value=1960, max_value=2020, value=(2010, 2020))
 
 col1, col2 = st.columns((2,2))
 # fig.update_layout(xaxis=list(range = c(0,10)))
@@ -255,13 +260,15 @@ col1, col2 = st.columns((2,2))
 
 with col1:
 
-    region_df = agriculture_data[agriculture_data["Country Name"] == region_option]
+    region_df = agriculture_data[agriculture_data["Country Name"] == region_option].copy()
     region_df = region_df[~region_df["Year"].isin(["1969", "2015-2020"])]
+    region_df = region_df[(region_df.Year <= str(year_max))&(region_df.Year >= str(year_min))]
     region_df['Total fertilizer consumption'] = region_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
         region_df["average_value_Arable land (hectares)"] / 1e3
 
-    country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display]
+    country_df = agriculture_data[agriculture_data["Country Name"] == country_to_display].copy()
     country_df = country_df[~country_df["Year"].isin(["1969", "2015-2020"])]
+    country_df = country_df[(country_df.Year <= str(year_max))&(country_df.Year >= str(year_min))]
     country_df['Total fertilizer consumption'] = country_df["average_value_Fertilizer consumption (kilograms per hectare of arable land)"] * \
         country_df["average_value_Arable land (hectares)"] / 1e3
 
@@ -294,7 +301,7 @@ with col1:
             region_value /= region_df["Population"]
         
         region_value = region_value * factor
-        region_mean_value = np.nanmean(np.log(region_value)) if logscale else region_value.mean()
+        region_mean_value = np.nanmean(np.log(region_value)) if logscale else np.nanmean(region_value)
         region_real_values.append(np.exp(region_mean_value) if logscale else region_mean_value)
         region_value = max((region_mean_value - min_value) / (max_value - min_value), 0)
         region_values.append(region_value)
@@ -304,7 +311,7 @@ with col1:
             country_value /= country_df["Population"]
         
         country_value = country_value * factor
-        country_mean_value = np.log(country_value.mean()) if logscale else country_value.mean()
+        country_mean_value = np.log(country_value.mean()) if logscale else np.nanmean(country_value)
         country_real_values.append(np.exp(country_mean_value) if logscale else country_mean_value)
         country_value = max((country_mean_value - min_value) / (max_value - min_value), 0)
         country_values.append(country_value)
