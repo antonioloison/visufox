@@ -98,6 +98,10 @@ with bigcol1:
     # @st.cache decorator skip reloading the code when the apps rerun.
     @st.cache
     def load_data():
+        with open("country_to_display.txt", "w") as f:
+            f.write("World")
+        with open("metric_to_display.txt", "w") as f:
+            f.write("2")
         agriculture_data = pd.read_csv("data/agriculture_data.csv", delimiter=";")
         with open("assets/countries.json") as f:
             countries = json.load(f)
@@ -182,7 +186,6 @@ with bigcol2:
     y_scaled = list(region_countries_df[col_pollutions[key_metric_to_display]["key"]][
                 :TOP_NUMBER_OF_COUNTRIES].values)
 
-    print(col_pollutions[key_metric_to_display]["key"])
     try:
         # print(key_metric_to_display)
         # print(col_pollutions[key_metric_to_display]["name"])
@@ -240,11 +243,14 @@ with bigcol2:
     # fig.update_yaxes(title_text="Avg Cereal Production (metric tons)", secondary_y=False)
     # fig.update_yaxes(title_text="Avg Fertilizer Consumption \n(kilograms per hectare of arable land)", secondary_y=True)
 
-    selected_points = plotly_events(fig, click_event=True, hover_event=False)
+    selected_points_country = plotly_events(fig, click_event=True, hover_event=False)
     try:
-        country_to_display = selected_points[-1]["x"]
+        country_to_display = selected_points_country[0]["x"]
+        with open("country_to_display.txt", "w") as f:
+            f.write(country_to_display)
     except:
-        country_to_display = region_option
+        with open("country_to_display.txt", "r") as f:
+            country_to_display = f.read()
 
     st.write("You can select a country on the bar chart above by clicking on the corresponding bar.")
     if country_to_display == "World":
@@ -380,10 +386,9 @@ with col1:
         with open('metric_to_display.txt', 'w') as output:
             output.write(str(key_metric_to_display))
     except:
-        metric_to_display = "Fertilizer consumption"
-        key_metric_to_display = 2
-        with open('metric_to_display.txt', 'w') as output:
-            output.write(str(key_metric_to_display))
+        with open('metric_to_display.txt', 'r') as f:
+            key_metric_to_display = int(f.read())%4
+        metric_to_display = col_pollutions[key_metric_to_display]["name"]
 
     st.write("You can select a pollution metric to display on the other charts by **double**-clicking on the corresponding metric above.")
     st.write(f"The currently selected metric is **{metric_to_display}**")
@@ -394,12 +399,15 @@ with col2:
 
     def get_label(date, df):
         """ Gets the label of the first and last point in the chart """
-        years = df[df[["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+        years = df[df[[col_pollutions[key_metric_to_display]["key"],
                     "average_value_Cereal production (metric tons)",
                     "Population"]].notnull().all(axis=1)]["Year"]
-        if date in [min(years), max(years)]:
-            return date
-        else:
+        try:            
+            if date in [min(years), max(years)]:
+                return date
+            else:
+                return ""
+        except:
             return ""
 
     region_df["label"] = region_df["Year"].apply(lambda x: get_label(x, region_df))
@@ -408,12 +416,19 @@ with col2:
 
     comparison_df = pd.concat([region_df, country_df])
 
-    comparison_df["polution_per_pop"] = \
-        comparison_df["average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)"] / \
-        comparison_df["Population"]
+    print(col_pollutions[key_metric_to_display]["key"])
+    if col_pollutions[key_metric_to_display]["to_normalize"]:
+        comparison_df["pollution"] = \
+            comparison_df[col_pollutions[key_metric_to_display]["key"]] / \
+            comparison_df["Population"]
+        title = col_pollutions[key_metric_to_display]["name"] + " per person"
+    else:
+        comparison_df["pollution"] = \
+            comparison_df[col_pollutions[key_metric_to_display]["key"]]
+        title = col_pollutions[key_metric_to_display]["name"]
     comparison_df["cereal_prod_per_pop"] = comparison_df["average_value_Cereal production (metric tons)"] / \
                                         comparison_df["Population"]
-    comparison_df = comparison_df[["polution_per_pop",
+    comparison_df = comparison_df[["pollution",
                                 "cereal_prod_per_pop",
                                 "Population",
                                 "Year",
@@ -422,7 +437,7 @@ with col2:
 
     time_evolution = alt.Chart(comparison_df).mark_line(point=True).encode(
         alt.X('cereal_prod_per_pop', axis=alt.Axis(title="Cereal Production Per Person")),
-        alt.Y('polution_per_pop', axis=alt.Axis(title="Methane Emissions Per Person")),
+        alt.Y('pollution', axis=alt.Axis(title=title)),
         order='Year',
         color=alt.Color("Country Name", scale=alt.Scale(scheme='dark2'), sort=[
         "East Asia & Pacific",
@@ -432,7 +447,7 @@ with col2:
         "North America",
         "South Asia",
         "Sub-Saharan Africa ", "World"]), 
-        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "polution_per_pop"]
+        tooltip=["Year", "Country Name", "cereal_prod_per_pop", "pollution"]
     ).properties(
         width=600,
         height=400
