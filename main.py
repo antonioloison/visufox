@@ -193,6 +193,7 @@ with col1:
             "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
             "metric": "eqCO2 kg",
             "to_normalize": True,
+            "logscale": True,
             "factor": 1e6
         },
         {
@@ -200,27 +201,30 @@ with col1:
             "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
             "metric": "eqCO2 kg",
             "to_normalize": True,
+            "logscale": True,
             "factor": 1e6
         },
         {
             "name": "Fertilizer consumption",
             "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
             "metric": "kilograms per hectare of arable land",
-            "to_normalize": False
+            "to_normalize": False,
+            "logscale": True,
         },
         {
             "name": "Annual freshwater withdrawals",
             "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
             "metric": "% of total freshwater withdrawal",
-            "to_normalize": False
+            "to_normalize": False,
+            "logscale": False,
         }
     ]
     categories, region_values, country_values, region_real_values, country_real_values, metrics, normalized = [], [], [], [], [], [], []
 
-    logscale = True
     for col_info in col_pollutions:
         colname = col_info["key"]
         factor = col_info.get("factor", 1)
+        logscale = col_info["logscale"]
 
         all_data = agriculture_data[["Country Name", "Population", colname]].copy()
         
@@ -242,7 +246,7 @@ with col1:
         
         region_value = region_value * factor
         region_mean_value = np.nanmean(np.log(region_value)) if logscale else region_value.mean()
-        region_real_values.append(np.exp(region_mean_value))
+        region_real_values.append(np.exp(region_mean_value) if logscale else region_mean_value)
         region_value = max((region_mean_value - min_value) / (max_value - min_value), 0)
         region_values.append(region_value)
         country_value = country_df[colname].copy()
@@ -252,7 +256,7 @@ with col1:
         
         country_value = country_value * factor
         country_mean_value = np.log(country_value.mean()) if logscale else country_value.mean()
-        country_real_values.append(np.exp(country_mean_value))
+        country_real_values.append(np.exp(country_mean_value) if logscale else country_mean_value)
         country_value = max((country_mean_value - min_value) / (max_value - min_value), 0)
         country_values.append(country_value)
 
