@@ -3,8 +3,6 @@
 
 import json
 from collections import defaultdict
-from tkinter import TOP
-from turtle import color, fillcolor
 
 import streamlit as st
 import pandas as pd
@@ -12,7 +10,6 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import altair as alt
-from vega_datasets import data
 from streamlit_plotly_events import plotly_events
 from plotly.graph_objs import *
 
