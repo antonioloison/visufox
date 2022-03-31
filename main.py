@@ -1,8 +1,6 @@
 # BIPO App
 # Authors: Setra Rakotovao, Antonio Loison, Lila Sainero, Géraud Faye
 
-# from curses import use_default_colors
-# from ast import pattern
 import json
 from collections import defaultdict
 from tkinter import TOP
@@ -21,13 +19,10 @@ from plotly.graph_objs import *
 
 TOP_NUMBER_OF_COUNTRIES = 20
 with open('metric_to_display.txt', 'r') as key:
-    # key_metric_to_display = (int(key.read())%4+1)%4
     key_metric_to_display = key.read()
     key_metric_to_display = int(key_metric_to_display)%4
 
     
-# metric_to_display = "Fertilizer consumption"
-# key_metric_to_display = 2
 col_pollutions = [
         {
             "name": "Methane emissions",
@@ -66,8 +61,6 @@ col_pollutions = [
             "to_normalize": False,
             "logscale": False,
         }
-
-        
     ]
 
 st.set_page_config(
@@ -134,7 +127,7 @@ with bigcol1:
 
     year_min, year_max = st.slider('Year', min_value=1960, max_value=2020, value=(2010, 2020))
 
-# st.write("You selected:", region_option)
+
 with bigcol2:
 # Display region bar chart
 
@@ -160,7 +153,6 @@ with bigcol2:
 
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-    # scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/1e6
     if key_metric_to_display == 1:
         scale = 1000
     elif key_metric_to_display == 2:
@@ -177,7 +169,6 @@ with bigcol2:
     if cereal_max < 2:
         exposant = exposant - 1
         cereal_max = 8
-    # selected_points = plotly_events(fig)
     fig.add_trace(
         go.Bar(
             x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
@@ -192,15 +183,10 @@ with bigcol2:
                 :TOP_NUMBER_OF_COUNTRIES].values)
 
     try:
-        # print(key_metric_to_display)
-        # print(col_pollutions[key_metric_to_display]["name"])
-        # print(scale)
         
         fig.add_trace(
             go.Bar(
                 x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-                # y=-scale*region_countries_df['Total fertilizer consumption'][
-                # :TOP_NUMBER_OF_COUNTRIES],
                 y = -scale*region_countries_df[col_pollutions[key_metric_to_display]["key"]][
                 :TOP_NUMBER_OF_COUNTRIES],
                 name=col_pollutions[key_metric_to_display]["name"],
@@ -208,7 +194,6 @@ with bigcol2:
                 hovertemplate=["%{x} <br>"+"{}: <br> {:.0e} {}".format(col_pollutions[key_metric_to_display]["name"], y_scaled[i], col_pollutions[key_metric_to_display]["metric"]) for i in range(TOP_NUMBER_OF_COUNTRIES)],
             ), secondary_y=False)
     except:
-        print("except")
         fig.add_trace(
             go.Bar(
                 x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
@@ -220,7 +205,6 @@ with bigcol2:
             ), secondary_y=False)
 
     fig.update_layout(
-        # title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         title_font_color="#391d04",
@@ -241,12 +225,6 @@ with bigcol2:
         )
     )
 
-    # Set x-axis title
-    # fig.update_xaxes(title_text="Country names")
-
-    # Set y-axes titles
-    # fig.update_yaxes(title_text="Avg Cereal Production (metric tons)", secondary_y=False)
-    # fig.update_yaxes(title_text="Avg Fertilizer Consumption \n(kilograms per hectare of arable land)", secondary_y=True)
 
     selected_points_country = plotly_events(fig, click_event=True, hover_event=False)
     try:
@@ -265,8 +243,6 @@ with bigcol2:
 
 
 col1, col2 = st.columns((2,2))
-# fig.update_layout(xaxis=list(range = c(0,10)))
-# st.plotly_chart(fig, use_container_width=True)
 
 with col1:
 
@@ -344,7 +320,6 @@ with col1:
         theta=categories,
         fill='tonext',
         name=region_option, 
-        # fillcolor='#ffcba4', 
         line_color='#319177', 
         hovertemplate=[f'{categ} {"per person" if norm else ""}: <br> {real_value:.2f} ({metric})' \
             for categ, norm, real_value, metric in zip(categories, normalized, region_real_values, metrics)]
@@ -353,7 +328,6 @@ with col1:
         fig.add_trace(go.Scatterpolar(
             r=country_values,
             theta=categories,
-            # fill='toself',
             name=country_to_display, 
             line_color='#E2774E', 
             hovertemplate=[f'{categ} {"per person" if norm else ""}: <br> {real_value:.2f} ({metric})' \
@@ -362,8 +336,6 @@ with col1:
         ))
 
     fig.update_layout(
-    # title='0 = min, 1 = max',
-        # template='plotly', 
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         polar=dict(
@@ -381,7 +353,6 @@ with col1:
         )
     )
 
-    # st.plotly_chart(fig, use_container_width=True)
 
     selected_points = plotly_events(fig, click_event=True, hover_event=False)
     try:
@@ -420,7 +391,6 @@ with col2:
 
     comparison_df = pd.concat([region_df, country_df])
 
-    print(col_pollutions[key_metric_to_display]["key"])
     if col_pollutions[key_metric_to_display]["to_normalize"]:
         comparison_df["pollution"] = \
             comparison_df[col_pollutions[key_metric_to_display]["key"]] / \
