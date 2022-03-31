@@ -18,7 +18,57 @@ from vega_datasets import data
 from streamlit_plotly_events import plotly_events
 from plotly.graph_objs import *
 
+
 TOP_NUMBER_OF_COUNTRIES = 20
+with open('metric_to_display.txt', 'r') as key:
+    # key_metric_to_display = (int(key.read())%4+1)%4
+    key_metric_to_display = key.read()
+    key_metric_to_display = int(key_metric_to_display)%4
+
+    
+# metric_to_display = "Fertilizer consumption"
+# key_metric_to_display = 2
+col_pollutions = [
+        {
+            "name": "Methane emissions",
+            "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
+            "metric": "eqCO2 kg",
+            "to_normalize": True,
+            "logscale": True,
+            "factor": 1e6
+        },
+        {
+            "name": "Nitrous oxide emissions",
+            "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
+            "metric": "eqCO2 kg",
+            "to_normalize": True,
+            "logscale": True,
+            "factor": 1e6
+        },
+        {
+            "name": "Fertilizer consumption",
+            "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
+            "metric": "kilograms per hectare of arable land",
+            "to_normalize": False,
+            "logscale": True,
+        },
+        {
+            "name": "Annual freshwater withdrawals caused by agriculture",
+            "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
+            "metric": "% of total freshwater withdrawal",
+            "to_normalize": False,
+            "logscale": False,
+        },
+        {
+            "name": "Total fertilizer consumption",
+            "key": "Total fertilizer consumption",
+            "metric": "kilograms",
+            "to_normalize": False,
+            "logscale": False,
+        }
+
+        
+    ]
 
 st.set_page_config(
      page_title="BAPO: Biggest Agricultural Polluters",
@@ -102,8 +152,17 @@ with bigcol2:
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
     # scale = np.mean(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])/1e6
-    scale = 10
-    exposant = np.int(np.log10(np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])))
+    if key_metric_to_display == 1:
+        scale = 1000
+    elif key_metric_to_display == 2:
+        scale = 10
+        key_metric_to_display = 4
+    elif key_metric_to_display == 3:
+        scale = 1000000
+    else:
+        scale = 1000
+
+    exposant = int(np.log10(np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])))
 
     cereal_max = np.max(region_countries_df["average_value_Cereal production (metric tons)"][:TOP_NUMBER_OF_COUNTRIES])//10**exposant
     if cereal_max < 2:
@@ -120,17 +179,37 @@ with bigcol2:
             hovertemplate="%{x} <br>"+"Cereal Production: %{y:.0e} tons",
         ), secondary_y=False)
 
-    y_scaled = list(region_countries_df["Total fertilizer consumption"][:TOP_NUMBER_OF_COUNTRIES].values)
+    y_scaled = list(region_countries_df[col_pollutions[key_metric_to_display]["key"]][
+                :TOP_NUMBER_OF_COUNTRIES].values)
 
-    fig.add_trace(
-        go.Bar(
-            x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
-            y=-scale*region_countries_df['Total fertilizer consumption'][
-            :TOP_NUMBER_OF_COUNTRIES],
-            name="Average Fertilizer Consumption (tons)",
-            marker=dict(color="maroon"), 
-            hovertemplate=["%{x} <br>"+"Fertilizer consumption: {:.0e} tons".format(y_scaled[i]) for i in range(TOP_NUMBER_OF_COUNTRIES)],
-        ), secondary_y=False)
+    print(col_pollutions[key_metric_to_display]["key"])
+    try:
+        # print(key_metric_to_display)
+        # print(col_pollutions[key_metric_to_display]["name"])
+        # print(scale)
+        
+        fig.add_trace(
+            go.Bar(
+                x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+                # y=-scale*region_countries_df['Total fertilizer consumption'][
+                # :TOP_NUMBER_OF_COUNTRIES],
+                y = -scale*region_countries_df[col_pollutions[key_metric_to_display]["key"]][
+                :TOP_NUMBER_OF_COUNTRIES],
+                name=col_pollutions[key_metric_to_display]["name"],
+                marker=dict(color="maroon"), 
+                hovertemplate=["%{x} <br>"+"{}: <br> {:.0e} {}".format(col_pollutions[key_metric_to_display]["name"], y_scaled[i], col_pollutions[key_metric_to_display]["metric"]) for i in range(TOP_NUMBER_OF_COUNTRIES)],
+            ), secondary_y=False)
+    except:
+        print("except")
+        fig.add_trace(
+            go.Bar(
+                x=region_countries_df["Country Name"][:TOP_NUMBER_OF_COUNTRIES],
+                y=-scale*region_countries_df['Total fertilizer consumption'][
+                :TOP_NUMBER_OF_COUNTRIES],
+                name="Average Fertilizer Consumption (tons)",
+                marker=dict(color="maroon"), 
+                hovertemplate=["%{x} <br>"+"Fertilizer consumption: {:.0e} tons".format(y_scaled[i]) for i in range(TOP_NUMBER_OF_COUNTRIES)],
+            ), secondary_y=False)
 
     fig.update_layout(
         # title_text=f"Top {TOP_NUMBER_OF_COUNTRIES} Biggest Cereal Producers in {region_option}",
@@ -145,15 +224,13 @@ with bigcol2:
         b=40, #bottom margin
         t=0  #top margin
         ), 
-        legend=dict(yanchor="top", y=1.1, xanchor="left", x=0.4), 
+        legend=dict(yanchor="top", y=1.1, xanchor="left", x=-0.1), 
         yaxis = dict(
             tickmode = 'array',
             tickvals = [cereal_max//2*i*10**exposant for i in range(-2, 3)],
             ticktext = [f'{-2*i*10**exposant/scale:.0e}' for i in range(-2, 1)] + [f'{abs(2*i*10**exposant):.0e}' for i in range(1, 4)], 
 
-    )
-    
-
+        )
     )
 
     # Set x-axis title
@@ -190,41 +267,10 @@ with col1:
 
     st.header("Emissions Details")
 
-    col_pollutions = [
-        {
-            "name": "Methane emissions",
-            "key": "average_value_Agricultural methane emissions (thousand metric tons of CO2 equivalent)",
-            "metric": "eqCO2 kg",
-            "to_normalize": True,
-            "logscale": True,
-            "factor": 1e6
-        },
-        {
-            "name": "Nitrous oxide emissions",
-            "key": "average_value_Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent)",
-            "metric": "eqCO2 kg",
-            "to_normalize": True,
-            "logscale": True,
-            "factor": 1e6
-        },
-        {
-            "name": "Fertilizer consumption",
-            "key": "average_value_Fertilizer consumption (kilograms per hectare of arable land)",
-            "metric": "kilograms per hectare of arable land",
-            "to_normalize": False,
-            "logscale": True,
-        },
-        {
-            "name": "Annual freshwater withdrawals",
-            "key": "average_value_Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",
-            "metric": "% of total freshwater withdrawal",
-            "to_normalize": False,
-            "logscale": False,
-        }
-    ]
+    
     categories, region_values, country_values, region_real_values, country_real_values, metrics, normalized = [], [], [], [], [], [], []
 
-    for col_info in col_pollutions:
+    for col_info in col_pollutions[:-1]:
         colname = col_info["key"]
         factor = col_info.get("factor", 1)
         logscale = col_info["logscale"]
@@ -309,10 +355,31 @@ with col1:
             range=[0, 1]
             )),
         showlegend=True,
-            legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.8)
+            legend=dict(yanchor="top", y=1.2, xanchor="left", x=0.8), 
+         margin=go.layout.Margin(
+        l=100, #left margin
+        r=100, #right margin
+        b=100, #bottom margin
+        t=100  #top margin
+        )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    # st.plotly_chart(fig, use_container_width=True)
+
+    selected_points = plotly_events(fig, click_event=True, hover_event=False)
+    try:
+        key_metric_to_display = selected_points[0]["pointNumber"]
+        metric_to_display = categories[key_metric_to_display]
+        with open('metric_to_display.txt', 'w') as output:
+            output.write(str(key_metric_to_display))
+    except:
+        metric_to_display = "Fertilizer consumption"
+        key_metric_to_display = 2
+        with open('metric_to_display.txt', 'w') as output:
+            output.write(str(key_metric_to_display))
+
+    st.write("You can select a pollution metric to display on the other charts by **double**-clicking on the corresponding metric above.")
+    st.write(f"The currently selected metric is **{metric_to_display}**")
 
 with col2:
     st.header("Evolution over time")
